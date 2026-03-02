@@ -8,6 +8,8 @@ router.get('/getPosts', postController.getPosts);
 
 router.get('/getPost/:id', postController.getPost);
 
+router.get('/author/:authorId', postController.getPostsByAuthor);
+
 router.post('/addPost', verify, postController.addPost);
 
 router.patch('/updatePost/:id', verify, postController.updatePost);

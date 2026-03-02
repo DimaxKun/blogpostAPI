@@ -1,6 +1,6 @@
 const Post = require('../models/Post');
-
 const { errorHandler } = require('../auth');
+
 
 module.exports.addPost = (req, res) => {
     let newPost = new Post({
@@ -26,7 +26,9 @@ module.exports.addPost = (req, res) => {
 }
 
 module.exports.getPosts = (req, res) => {
-    return Post.find({}).populate('author', 'username').sort({ createdAt: -1 })
+    return Post.find({})
+    .populate('author', 'username')
+    .sort({ createdAt: -1 })
     .then(result => {
         if(result.length > 0){
             return res.status(200).send({posts: result});
@@ -39,7 +41,9 @@ module.exports.getPosts = (req, res) => {
 };
 
 module.exports.getPost = (req, res) => {
-    Post.findById(req.params.id).populate('author', 'username').populate('comments.userId', 'username')
+    Post.findById(req.params.id)
+    .populate('author', 'username')
+    .populate('comments.userId', 'username')
     .then(post => {
         if(post){
             return res.status(200).send(post)
@@ -103,7 +107,7 @@ module.exports.addComment = (req, res) => {
         req.params.id,
         { $push: { comments: newComment } },
         { new: true }
-    ).populate('author', 'username').populate('comments.userId', 'username')
+    )
     .then(post => {
         if(post){
             res.status(200).send({
@@ -118,7 +122,8 @@ module.exports.addComment = (req, res) => {
 };
 
 module.exports.getComments = (req, res) => {
-    Post.findById(req.params.id).populate('comments.userId', 'username')
+    Post.findById(req.params.id)
+    .populate('comments.userId', 'username')
     .then(post => {
         if(!post){
             return res.status(404).send({message: 'post not found'})
@@ -159,4 +164,20 @@ module.exports.deleteComment = (req, res) => {
             });
         });
     }).catch(error => errorHandler(error, req, res));
+};
+
+
+module.exports.getPostsByAuthor = (req, res) => {
+    return Post.find({ author: req.params.authorId })
+    .populate('author', 'username')
+    .sort({ createdAt: -1 })
+    .then(result => {
+        if(result.length > 0){
+            return res.status(200).send({posts: result});
+        }
+        else{
+            return res.status(404).send({ message: 'No posts found for this author'});
+        }
+    })
+    .catch(error => errorHandler(error, req, res));
 };

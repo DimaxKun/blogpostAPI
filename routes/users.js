@@ -10,5 +10,7 @@ router.post('/login', userController.loginUser);
 
 router.get('/details', verify, userController.getProfile);
 
+router.get('/public/:id', userController.getPublicProfile);
+
 module.exports = router;
 

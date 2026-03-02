@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const auth = require('../auth');
 const { errorHandler } = auth;
 
+
 module.exports.registerUser = (req, res) => {
     if(!req.body.email.includes('@')){
         return res.status(400).send({ message: 'Invalid email format' });
@@ -62,6 +63,21 @@ module.exports.getProfile = (req, res) => {
             return res.status(403).send({message: 'invalid signature'});
         } else{
             user.password = ""
+            return res.status(200).send({
+                user: user
+            });
+        }
+    }).catch(error => errorHandler(error, req, res));
+}
+
+
+module.exports.getPublicProfile = (req, res) => {
+    return User.findById(req.params.id)
+    .select('username isAdmin')
+    .then(user => {
+        if(!user){
+            return res.status(404).send({message: 'User not found'});
+        } else{
             return res.status(200).send({
                 user: user
             });
