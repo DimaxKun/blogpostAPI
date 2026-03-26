@@ -7,6 +7,8 @@ const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts')
 
 const app = express();
+// When hosted behind a proxy (Render), this makes req.protocol match the public scheme.
+app.set('trust proxy', true);
 
 app.use(cors());
 

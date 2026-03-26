@@ -8,7 +8,11 @@ module.exports.uploadImage = (req, res) => {
 
     // Express static is mounted at `/uploads`. Return an absolute URL so the
     // frontend can load images even when client/backend run on different origins.
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    const proto = Array.isArray(forwardedProto)
+        ? forwardedProto[0]
+        : (forwardedProto || req.protocol);
+    const baseUrl = `${proto}://${req.get('host')}`;
     const url = `${baseUrl}/uploads/${req.file.filename}`;
     return res.status(201).send({ url });
 }
