@@ -1,6 +1,18 @@
 const Post = require('../models/Post');
 const { errorHandler } = require('../auth');
 
+module.exports.uploadImage = (req, res) => {
+    if (!req.file) {
+        return res.status(400).send({ message: 'Please upload a valid image file.' });
+    }
+
+    // Express static is mounted at `/uploads`. Return an absolute URL so the
+    // frontend can load images even when client/backend run on different origins.
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const url = `${baseUrl}/uploads/${req.file.filename}`;
+    return res.status(201).send({ url });
+}
+
 
 module.exports.addPost = (req, res) => {
     let newPost = new Post({
