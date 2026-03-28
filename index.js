@@ -10,9 +10,12 @@ const app = express();
 // When hosted behind a proxy (Render), this makes req.protocol match the public scheme.
 app.set('trust proxy', true);
 
-app.use(cors());
+app.use(cors({
+    origin: true,       // allow all origins dynamically
+    credentials: true,  // allow cookies/auth headers
+}));
 
-mongoose.connect('mongodb+srv://admin:admin1234@alicluster.rzokgxg.mongodb.net/b598-s87-s89?appName=AliCluster')
+mongoose.connect(process.env.MONGODB_URI);
 
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
@@ -27,10 +30,10 @@ app.use('/posts', postRoutes)
 // Serve uploaded images so the rich-text editor can reference them.
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-if(require.main === module){
-	app.listen(process.env.PORT || 4000, () => {
-	    console.log(`API is now online on port ${ process.env.PORT || 4000 }`)
-	});
-}
+// if(require.main === module){
+// 	app.listen(process.env.PORT || 4000, () => {
+// 	    console.log(`API is now online on port ${ process.env.PORT || 4000 }`)
+// 	});
+// }
 
 module.exports = {app, mongoose};
